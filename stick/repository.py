@@ -1,3 +1,4 @@
+import codecs
 import io
 import json
 import logging
