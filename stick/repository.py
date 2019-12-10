@@ -176,9 +176,11 @@ class Repository(object):
         json_key = '{0}{1}/manifest.json'.format(self.prefix, safe_name)
         logger.info('Uploading {0}'.format(json_key))
         with io.BytesIO() as data:
-            json.dump(project.get_manifest(), io.TextIOWrapper(data, encoding='utf-8'))
-            data.seek(0, 0)
-            return self.client.put_object(Body=data, Bucket=self.bucket, Key=json_key, ContentType='application/json; charset=utf-8')
+            with io.TextIOWrapper(data, encoding='utf-8') as text:
+                json.dump(project.get_manifest(), text)
+                text.flush()
+                data.seek(0, 0)
+                return self.client.put_object(Body=data, Bucket=self.bucket, Key=json_key, ContentType='application/json; charset=utf-8')
 
     def _put_json(self, safe_name, project, version=None):
         """Regenerate and upload the project or release-level index JSON"""
@@ -186,9 +188,11 @@ class Repository(object):
         json_key = '{0}{1}{2}/json'.format(self.prefix, safe_name, version_prefix)
         logger.info('Uploading {0}'.format(json_key))
         with io.BytesIO() as data:
-            json.dump(project.get_metadata(version), io.TextIOWrapper(data, encoding='utf-8'))
-            data.seek(0, 0)
-            return self.client.put_object(Body=data, Bucket=self.bucket, Key=json_key, ContentType='application/json; charset=utf-8')
+            with io.TextIOWrapper(data, encoding='utf-8') as text:
+                json.dump(project.get_metadata(version), text)
+                text.flush()
+                data.seek(0, 0)
+                return self.client.put_object(Body=data, Bucket=self.bucket, Key=json_key, ContentType='application/json; charset=utf-8')
 
     def _put_index(self, safe_name, project):
         """Regenerate and upload the project-level index HTML"""
