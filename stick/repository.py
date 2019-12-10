@@ -1,3 +1,4 @@
+import codecs
 import io
 import json
 import logging
@@ -176,7 +177,9 @@ class Repository(object):
         json_key = '{0}{1}/manifest.json'.format(self.prefix, safe_name)
         logger.info('Uploading {0}'.format(json_key))
         with io.BytesIO() as data:
-            json.dump(project.get_manifest(), data)
+            writer = codecs.getwriter("utf-8")
+            str_data = writer(data)
+            json.dump(project.get_manifest(), str_data)
             data.seek(0, 0)
             return self.client.put_object(Body=data, Bucket=self.bucket, Key=json_key, ContentType='application/json; charset=utf-8')
 
@@ -186,7 +189,9 @@ class Repository(object):
         json_key = '{0}{1}{2}/json'.format(self.prefix, safe_name, version_prefix)
         logger.info('Uploading {0}'.format(json_key))
         with io.BytesIO() as data:
-            json.dump(project.get_metadata(version), data)
+            writer = codecs.getwriter("utf-8")
+            str_data = writer(data)
+            json.dump(project.get_metadata(version), str_data)
             data.seek(0, 0)
             return self.client.put_object(Body=data, Bucket=self.bucket, Key=json_key, ContentType='application/json; charset=utf-8')
 
