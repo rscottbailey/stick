@@ -19,8 +19,9 @@ logger = logging.getLogger(__name__)
 
 
 class Repository(object):
-    def __init__(self, bucket, prefix, profile):
+    def __init__(self, bucket, url, prefix, profile):
         self.bucket = bucket
+        self.url = url
         self.prefix = prefix
         self.client = boto3.Session(profile_name=profile).client('s3', config=client_config)
         self._project_cache = {}
@@ -29,7 +30,10 @@ class Repository(object):
             self.prefix += '/'
 
     def get_url(self):
-        url = 'https://{0}.s3.amazonaws.com/{1}'.format(self.bucket, self.prefix)
+        if self.url is None:
+            url = 'https://{0}.s3.amazonaws.com/{1}'.format(self.bucket, self.prefix)
+        else:
+            url = '{0}/{1}'.format(self.url, self.prefix)
         return url
 
     def reindex(self, projects):
