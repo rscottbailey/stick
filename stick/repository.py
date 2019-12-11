@@ -24,6 +24,9 @@ class Repository(object):
         self.client = boto3.Session(profile_name=profile).client('s3', config=client_config)
         self._project_cache = {}
 
+        if self.baseurl is not None and not self.baseurl.endswith('/'):
+            self.baseurl += '/'
+
         if not self.prefix.endswith('/'):
             self.prefix += '/'
 
